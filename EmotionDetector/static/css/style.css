@@ -1,0 +1,520 @@
+.camera-container {
+    position: relative;
+    margin: 0 auto;
+    max-width: 640px;
+    height: 480px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#video {
+    width: 100%;
+    height: 100%;
+    display: none;
+    object-fit: cover;
+    background-color: #2d2d2d;
+}
+
+.face-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.controls button {
+    min-width: 120px;
+}
+
+.emotion-container {
+    text-align: center;
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.emotion-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.emotion-icon {
+    font-size: 2rem;
+}
+
+/* Compact emotion display panel */
+.emotion-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+.emotion-card {
+    flex: 0 0 auto;
+    width: 100px;
+    height: 90px;
+    border-radius: 10px;
+    background-color: var(--bs-gray-800);
+    border: 2px solid var(--bs-gray-700);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+.emotion-card.active {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    transform: scale(1.05);
+}
+
+.emotion-card i {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.emotion-card-label {
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 1;
+    margin-top: 5px;
+}
+
+.compact-history {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.history-item {
+    flex: 0 0 auto;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    background-color: var(--bs-gray-800);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-item i {
+    font-size: 0.9rem;
+}
+
+.emotion-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 0.85rem;
+}
+
+.emotion-confidence {
+    height: 4px;
+    background-color: var(--bs-gray-700);
+    width: 100%;
+    border-radius: 2px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.emotion-confidence-bar {
+    height: 100%;
+    background-color: var(--bs-primary);
+    transition: width 0.3s ease;
+}
+
+.feedback {
+    margin: 15px 0;
+}
+
+/* Animation for emotion updates */
+.emotion-update {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile-first responsive design */
+html {
+    scroll-behavior: smooth; /* Smooth scrolling for anchor links */
+}
+
+.app-heading {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-top: 5px;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+    .camera-container {
+        height: 360px;
+    }
+    
+    .no-camera-placeholder {
+        height: 360px;
+    }
+    
+    .emotion-card {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .display-6 {
+        font-size: 1.5rem;
+    }
+    
+    .emotion-icon {
+        font-size: 2.5rem !important;
+    }
+    
+    .emotion-panel {
+        gap: 5px;
+    }
+    
+    .mood-component {
+        padding: 8px 10px;
+        min-width: 70px;
+        font-size: 0.9rem;
+    }
+    
+    .mood-value {
+        font-size: 0.95rem;
+    }
+    
+    .message-bubble {
+        padding: 10px;
+    }
+    
+    #startDetectionButton, #stopDetectionButton {
+        width: auto;
+        font-size: 1rem;
+        padding: 0.5rem 1rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+.no-camera-placeholder {
+    width: 100%;
+    height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #2d2d2d;
+    color: #fff;
+    border-radius: 8px;
+}
+
+.card {
+    background-color: var(--bs-dark);
+    border: 1px solid var(--bs-gray-700);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--bs-gray-700);
+}
+
+footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: var(--bs-gray-600);
+}
+
+/* Voice Analysis Styles */
+.audio-controls {
+    margin: 15px 0;
+}
+
+.mood-component {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 10px 15px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.mood-value {
+    display: block;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 5px;
+}
+
+/* Font awesome icon fix for some browsers */
+.fa-face-smile:before {
+    content: "\f118";
+}
+
+.fa-microphone-alt:before {
+    content: "\f3c9";
+}
+
+.fa-brain:before {
+    content: "\f5dc";
+}
+
+/* Voice Analysis Toggle */
+.voice-toggle {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-check-input:checked {
+    background-color: var(--bs-info);
+    border-color: var(--bs-info);
+}
+
+.form-check-input {
+    width: 3em !important;
+    height: 1.5em !important;
+    margin-top: 0;
+}
+
+.form-check-label {
+    font-weight: 500;
+    margin-left: 0.5rem;
+}
+
+/* Single controls button */
+#startDetectionButton, #stopDetectionButton {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 200px;
+}
+
+#startDetectionButton:hover {
+    background-color: var(--bs-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Timeline link */
+a.btn-outline-info {
+    border-width: 2px;
+    font-weight: 500;
+}
+
+/* Therapy Advice Styles */
+.therapy-advice-content {
+    padding: 10px 0;
+}
+
+.therapist-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.therapist-avatar {
+    flex: 0 0 40px;
+    height: 40px;
+    background-color: var(--bs-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.message-bubble {
+    background-color: var(--bs-gray-800);
+    border-radius: 1rem 1rem 1rem 0;
+    padding: 15px;
+    position: relative;
+    max-width: calc(100% - 60px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* User message styling */
+.user-message .message-bubble {
+    background-color: var(--bs-primary);
+    border-radius: 1rem 1rem 0 1rem;
+    color: white;
+    margin-left: auto;
+    max-width: 80%;
+}
+
+.message-bubble p {
+    margin-bottom: 0;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Animation for new messages */
+.therapist-message, .user-message {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#userResponseForm .form-text {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+#userResponseInput {
+    border-radius: 20px 0 0 20px;
+    padding-left: 15px;
+    background-color: var(--bs-gray-800);
+    border-color: var(--bs-gray-700);
+    color: var(--bs-light);
+}
+
+#userResponseForm button {
+    border-radius: 0 20px 20px 0;
+}
+
+/* Change background of therapy advice header based on emotion */
+.bg-happy { background-color: var(--bs-success) !important; }
+.bg-sad { background-color: var(--bs-primary) !important; }
+.bg-angry { background-color: var(--bs-danger) !important; }
+.bg-surprised { background-color: var(--bs-warning) !important; }
+.bg-fearful { background-color: var(--bs-dark) !important; }
+.bg-disgusted { background-color: var(--bs-secondary) !important; }
+.bg-neutral { background-color: var(--bs-info) !important; }
+.bg-complex { background-color: var(--bs-teal) !important; }
+
+/* Statistics Section Styles */
+#statistics-section .card-body {
+    padding: 1.25rem;
+}
+
+#statistics-section .card.bg-dark {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    transition: all 0.3s ease;
+}
+
+#statistics-section .card.bg-dark:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+#statistics-section .h4 {
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+/* Responsive table for mobile */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 576px) {
+    .table th, .table td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .compact-history {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .history-item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+/* Speech Recognition Styles */
+.speech-status {
+    margin: 15px 0;
+}
+
+.speech-indicator {
+    display: inline-block;
+    position: relative;
+}
+
+.speech-pulse {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--bs-danger);
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+    vertical-align: middle;
+}
+
+.speech-text {
+    display: inline-block;
+    margin-left: 10px;
+    font-weight: 500;
+    vertical-align: middle;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.recognized-speech .card {
+    border-radius: 1rem;
+    border: 1px solid var(--bs-gray-700);
+}
+
+.recognized-speech .card-text {
+    font-style: italic;
+}

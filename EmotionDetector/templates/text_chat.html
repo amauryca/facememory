@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Therapist Text Chat | Multimodal Emotion Analyzer</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="mb-4">
+            <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+                <div class="container-fluid px-0">
+                    <a class="navbar-brand" href="{{ url_for('index') }}">
+                        <i class="fas fa-brain me-2"></i> Multimodal Emotion Analyzer
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('index') }}">
+                                    <i class="fas fa-home me-1"></i> Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('timeline') }}">
+                                    <i class="fas fa-chart-line me-1"></i> Timeline
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ url_for('text_chat') }}">
+                                    <i class="fas fa-comment-alt me-1"></i> Text Chat
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="app-heading">
+                <h1 class="display-5">
+                    <i class="fas fa-comment-medical text-primary me-2"></i>
+                    AI Therapist Text Chat
+                </h1>
+                <p class="lead">Have a text conversation with an AI therapist for emotional support and guidance</p>
+            </div>
+        </header>
+        
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <!-- AI Therapist Text Chat Interface -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="h5 mb-0">Therapeutic Conversation</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- Chat messages container -->
+                        <div class="chat-container" id="chatContainer">
+                            <!-- AI welcome message -->
+                            <div class="chat-message ai-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <div class="message-content">
+                                    <p>Hello! I'm your AI therapist. I'm here to listen and offer support. How are you feeling today?</p>
+                                    <span class="message-time">Just now</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Messages will be added here dynamically -->
+                        </div>
+                        
+                        <!-- Typing indicator (initially hidden) -->
+                        <div class="typing-indicator d-none" id="typingIndicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                        
+                        <!-- Message input form -->
+                        <form id="chatForm" class="chat-form mt-3">
+                            <div class="input-group">
+                                <input type="text" id="messageInput" class="form-control" placeholder="Type your message..." required>
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Share how you're feeling or ask questions for therapeutic guidance.</div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Information card -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">About AI Therapeutic Chat</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Confidential & Private:</strong> This text-based conversation is completely private and not stored beyond your current session.
+                        </div>
+                        
+                        <h5 class="mb-3">How This Works:</h5>
+                        <ul class="list-group list-group-flush mb-4">
+                            <li class="list-group-item bg-dark">
+                                <i class="fas fa-comment-dots me-2 text-primary"></i>
+                                <strong>Express Yourself:</strong> Share your thoughts, feelings, or concerns in a judgment-free space.
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <i class="fas fa-brain me-2 text-primary"></i>
+                                <strong>Personalized Responses:</strong> Receive guidance based on therapeutic principles and emotional intelligence.
+                            </li>
+                            <li class="list-group-item bg-dark">
+                                <i class="fas fa-shield-alt me-2 text-primary"></i>
+                                <strong>Safe Space:</strong> Practice articulating emotions and thoughts with supportive feedback.
+                            </li>
+                        </ul>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Important Note:</strong> This AI therapist provides general guidance and emotional support, but is not a replacement for professional mental health care. If you're experiencing a crisis or need immediate assistance, please contact a qualified mental health professional.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Multimodal Emotion Analyzer &copy; 2025 | Built with Face-API.js, Web Audio API, and Computer Vision</p>
+        </footer>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/text-chat.js') }}"></script>
+</body>
+</html>

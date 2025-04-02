@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Emotion Analyzer</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Face-API.js library - using local copy for reliability -->
+    <script src="{{ url_for('static', filename='js/face-api.min.js') }}"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Mobile-friendly navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top mb-3">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="fas fa-brain"></i> Emotion Analyzer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('timeline') }}"><i class="fas fa-chart-line"></i> Timeline</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('text_chat') }}"><i class="fas fa-comment-alt"></i> Text Chat</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-3">
+        <header class="app-heading">
+            <h1><i class="fas fa-brain"></i> Multimodal Emotion Analyzer</h1>
+            <p class="lead">Real-time emotion recognition using facial expressions and voice tone analysis</p>
+        </header>
+        
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <!-- Emotion Detection Section -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0">Emotion Detection</h2>
+                        <div id="loadingIndicator" class="d-none">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="camera-container">
+                            <video id="video" autoplay muted playsinline></video>
+                            <canvas id="overlay" class="face-overlay"></canvas>
+                            <div class="no-camera-placeholder" id="cameraPlaceholder">
+                                <div class="text-center">
+                                    <i class="fas fa-camera fa-3x mb-3"></i>
+                                    <h3>Ready to detect your emotions</h3>
+                                    <p>Click the "Start Analysis" button below to begin</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="loadingMessage" class="alert alert-info d-none">
+                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            Loading detection models...
+                        </div>
+                        
+                        <div class="feedback mb-3">
+                            <div class="alert alert-secondary" id="statusText">Ready to analyze your emotions from face and voice. Click "Start Analysis" button below to begin.</div>
+                        </div>
+                        
+                        <div class="controls text-center">
+                            <button id="startDetectionButton" class="btn btn-lg btn-primary px-4 py-3">
+                                <i class="fas fa-play me-2"></i><i class="fas fa-camera me-1"></i> + <i class="fas fa-microphone me-1"></i> Start Analysis
+                            </button>
+                            <button id="stopDetectionButton" class="btn btn-lg btn-danger px-4 py-3 d-none">
+                                <i class="fas fa-stop me-2"></i>Stop Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Emotion Dashboard -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0">Emotion Analysis</h2>
+                        <span class="badge bg-primary" id="currentConfidence">0%</span>
+                    </div>
+                    <div class="card-body">
+                        <!-- Current Emotion Display (ENHANCED) -->
+                        <div class="emotion-container mb-4">
+                            <div class="text-center mb-3">
+                                <i id="emotionIcon" class="emotion-icon fas fa-question-circle text-muted" style="font-size: 3.5rem;"></i>
+                                <h3 id="emotionDisplay" class="display-6 mt-2" style="font-weight: bold;">Waiting for detection...</h3>
+                            </div>
+                        </div>
+                        
+                        <!-- Overall Mood Analysis (NEW) -->
+                        <div class="card mb-4 bg-dark">
+                            <div class="card-body">
+                                <h4 class="h6 mb-3">Overall Mood Analysis</h4>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <!-- Facial Expression -->
+                                    <div class="mood-component face-mood">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-face-smile me-2"></i>
+                                            <span>Face:</span>
+                                        </div>
+                                        <span id="faceMoodValue" class="mood-value">Not detected</span>
+                                    </div>
+                                    
+                                    <!-- Voice Tone (NEW) -->
+                                    <div class="mood-component voice-mood">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-microphone-alt me-2"></i>
+                                            <span>Voice:</span>
+                                        </div>
+                                        <span id="voiceMoodValue" class="mood-value">Not detected</span>
+                                    </div>
+                                    
+                                    <!-- Combined Mood -->
+                                    <div class="mood-component combined-mood">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-brain me-2"></i>
+                                            <span>Overall:</span>
+                                        </div>
+                                        <span id="overallMoodValue" class="mood-value">Not analyzed</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Confidence bar -->
+                                <div class="emotion-confidence mb-2">
+                                    <div id="confidenceBar" class="emotion-confidence-bar" style="width: 0%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Low confidence</small>
+                                    <small class="text-muted">High confidence</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Timeline Link -->
+                        <div class="text-end mb-4">
+                            <a href="{{ url_for('timeline') }}" class="btn btn-outline-info">
+                                <i class="fas fa-chart-line me-1"></i> View Timeline
+                            </a>
+                        </div>
+                        
+                        <!-- Hidden audio controls for internal use -->
+                        <div class="d-none">
+                            <button id="startAudioButton"></button>
+                            <button id="stopAudioButton"></button>
+                            <div id="audioStatusText">Voice analysis ready.</div>
+                            <div id="voiceAnalysisStatus">Off</div>
+                        </div>
+                        
+                        <!-- Emotion Cards Panel (ENHANCED) -->
+                        <div class="emotion-panel">
+                            <div class="emotion-card" id="happy-card">
+                                <i class="fas fa-smile text-success"></i>
+                                <span class="emotion-card-label">Happy</span>
+                            </div>
+                            <div class="emotion-card" id="sad-card">
+                                <i class="fas fa-frown text-primary"></i>
+                                <span class="emotion-card-label">Sad</span>
+                            </div>
+                            <div class="emotion-card" id="angry-card">
+                                <i class="fas fa-angry text-danger"></i>
+                                <span class="emotion-card-label">Angry</span>
+                            </div>
+                            <div class="emotion-card" id="surprised-card">
+                                <i class="fas fa-surprise text-warning"></i>
+                                <span class="emotion-card-label">Surprised</span>
+                            </div>
+                            <div class="emotion-card" id="neutral-card">
+                                <i class="fas fa-meh text-info"></i>
+                                <span class="emotion-card-label">Neutral</span>
+                            </div>
+                            <div class="emotion-card" id="fearful-card">
+                                <i class="fas fa-grimace text-dark"></i>
+                                <span class="emotion-card-label">Fearful</span>
+                            </div>
+                            <div class="emotion-card" id="disgusted-card">
+                                <i class="fas fa-dizzy text-secondary"></i>
+                                <span class="emotion-card-label">Disgusted</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                
+                <!-- Hidden containers for statistics data that will be used on the timeline page -->
+                <div class="d-none">
+                    <div id="compactHistory"></div>
+                    <div id="emotionHistory"></div>
+                    <div id="emotionHistoryTable"></div>
+                    <div id="statCurrentEmotion"></div>
+                    <div id="statDetectionCount"></div>
+                    <div id="statDominantEmotion"></div>
+                    <div id="statAvgConfidence"></div>
+                </div>
+
+                <!-- AI Therapist Interaction Section -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0">Therapeutic Conversation</h2>
+                        <div id="speechStatus" class="speech-status">
+                            <div class="speech-indicator d-none">
+                                <div class="speech-pulse"></div>
+                                <div class="speech-text">Listening...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Interactive Conversation:</strong> I'll be analyzing your emotions and words to provide personalized support. Feel free to share what's on your mind, and I'll respond thoughtfully.
+                        </div>
+                        
+                        <!-- Therapist response area -->
+                        <div class="therapist-message mb-4">
+                            <div class="therapist-avatar">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="message-bubble">
+                                <p id="therapyAdviceText">I'm here to listen and understand. How are you feeling at this moment? Take your time to express yourself.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Speech recognition status -->
+                        <div id="recognizedSpeech" class="recognized-speech mb-3 d-none">
+                            <div class="card bg-dark">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">I heard you say:</h6>
+                                    <p class="card-text" id="speechText"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="h5 mb-0">About Multimodal Emotion Analysis</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-box">
+                            <p>This application uses a multimodal approach to analyze your emotional state:</p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 bg-dark">
+                                        <div class="card-body">
+                                            <h5><i class="fas fa-camera me-2"></i>Facial Expression Analysis</h5>
+                                            <p>Computer vision detects faces and analyzes facial expressions in real-time to identify emotions.</p>
+                                            <div class="alert alert-secondary">
+                                                For best results, ensure your face is well lit and centered in the camera view.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card h-100 bg-dark">
+                                        <div class="card-body">
+                                            <h5><i class="fas fa-microphone me-2"></i>Voice Tone Analysis</h5>
+                                            <p>Audio processing analyzes pitch, volume, and speech patterns to determine emotional state from your voice.</p>
+                                            <div class="alert alert-secondary">
+                                                Speak normally into your microphone for accurate voice analysis.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h5 class="mb-3">Recognizable Emotions:</h5>
+                            <div class="row text-center">
+                                <div class="col-4 col-md-2 mb-3">
+                                    <i class="fas fa-smile fa-2x text-success"></i>
+                                    <p>Happy</p>
+                                </div>
+                                <div class="col-4 col-md-2 mb-3">
+                                    <i class="fas fa-frown fa-2x text-primary"></i>
+                                    <p>Sad</p>
+                                </div>
+                                <div class="col-4 col-md-2 mb-3">
+                                    <i class="fas fa-angry fa-2x text-danger"></i>
+                                    <p>Angry</p>
+                                </div>
+                                <div class="col-4 col-md-2 mb-3">
+                                    <i class="fas fa-surprise fa-2x text-warning"></i>
+                                    <p>Surprised</p>
+                                </div>
+                                <div class="col-4 col-md-2 mb-3">
+                                    <i class="fas fa-meh fa-2x text-info"></i>
+                                    <p>Neutral</p>
+                                </div>
+                                <div class="col-4 col-md-2 mb-3">
+                                    <i class="fas fa-grimace fa-2x text-dark"></i>
+                                    <p>Fearful</p>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <i class="fas fa-brain me-2"></i>
+                                <strong>Combined Analysis:</strong> For the most accurate emotion assessment, use both facial and voice analysis simultaneously. The system combines both inputs to determine your overall emotional state.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Multimodal Emotion Analyzer &copy; 2025 | Built with Face-API.js, Web Audio API, and Computer Vision</p>
+        </footer>
+    </div>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/voice-analysis.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/therapy-advice.js') }}"></script>
+</body>
+</html>
